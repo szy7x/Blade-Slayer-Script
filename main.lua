@@ -1,22 +1,19 @@
 repeat task.wait() until game:IsLoaded()
 
--- Carrega Rayfield corretamente
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+-- Carrega Fluent
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
-local Window = Rayfield:CreateWindow({
-    Name = "Blade Slayer Hub",
-    LoadingTitle = "Carregando Script",
-    LoadingSubtitle = "by Szy",
-    ConfigurationSaving = {
-        Enabled = false,
-    },
-    Discord = {
-        Enabled = false,
-    },
-    KeySystem = false,
+local Window = Fluent:CreateWindow({
+    Title = "Blade Slayer Hub | by Szy",
+    SubTitle = "Tora Style",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(500, 350),
+    Acrylic = true,
+    Theme = "Darker",
+    MinimizeKey = Enum.KeyCode.RightControl
 })
 
-local MainTab = Window:CreateTab("Main", 4483362458)
+local Tab = Window:AddTab({ Title = "Main", Icon = "rbxassetid://6026568198" })
 
 -- Variáveis de controle
 local autoFarm = false
@@ -72,39 +69,23 @@ local function startAutoUpgrade()
     end)
 end
 
--- Botões
-MainTab:CreateToggle({
-    Name = "Auto Farm",
-    CurrentValue = false,
-    Callback = function(Value)
-        autoFarm = Value
-        if Value then startAutoFarm() end
-    end,
-})
+-- Adiciona os botões na aba Fluent
+Tab:AddToggle("Auto Farm", {Default = false}, function(state)
+    autoFarm = state
+    if state then startAutoFarm() end
+end)
 
-MainTab:CreateToggle({
-    Name = "Auto Rebirth",
-    CurrentValue = false,
-    Callback = function(Value)
-        autoRebirth = Value
-        if Value then startAutoRebirth() end
-    end,
-})
+Tab:AddToggle("Auto Rebirth", {Default = false}, function(state)
+    autoRebirth = state
+    if state then startAutoRebirth() end
+end)
 
-MainTab:CreateToggle({
-    Name = "Auto Equip",
-    CurrentValue = false,
-    Callback = function(Value)
-        autoEquip = Value
-        if Value then startAutoEquip() end
-    end,
-})
+Tab:AddToggle("Auto Equip", {Default = false}, function(state)
+    autoEquip = state
+    if state then startAutoEquip() end
+end)
 
-MainTab:CreateToggle({
-    Name = "Auto Upgrade",
-    CurrentValue = false,
-    Callback = function(Value)
-        autoUpgrade = Value
-        if Value then startAutoUpgrade() end
-    end,
-})
+Tab:AddToggle("Auto Upgrade", {Default = false}, function(state)
+    autoUpgrade = state
+    if state then startAutoUpgrade() end
+end)
