@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Blade Slayer | Szy Hub",
+   Name = "Blade Slayer | Wing Hub",
    LoadingTitle = "Blade Slayer Script",
    LoadingSubtitle = "By Szy",
    ConfigurationSaving = {
@@ -11,6 +11,13 @@ local Window = Rayfield:CreateWindow({
       Enabled = false
    },
    KeySystem = false
+})
+
+Rayfield:Notify({
+   Title = "Szy Hub",
+   Content = "Script carregado com sucesso!",
+   Duration = 6.5,
+   Image = 4483362458,
 })
 
 -- ABA: Farm
@@ -23,8 +30,7 @@ FarmTab:CreateToggle({
    Callback = function(Value)
       getgenv().autoKill = Value
       while getgenv().autoKill do
-         -- Comando de auto kill
-         print("Matando...")
+         print("Matando inimigos...")
          task.wait(0.5)
       end
    end
@@ -37,8 +43,7 @@ FarmTab:CreateToggle({
    Callback = function(Value)
       getgenv().autoUpgrade = Value
       while getgenv().autoUpgrade do
-         -- Comando para upgrade
-         print("Upando...")
+         print("Fazendo upgrade...")
          task.wait(1)
       end
    end
@@ -48,7 +53,7 @@ FarmTab:CreateToggle({
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
 PlayerTab:CreateButton({
-   Name = "Speed x2",
+   Name = "Velocidade x2",
    Callback = function()
       game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
    end
