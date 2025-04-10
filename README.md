@@ -7,4 +7,4 @@ Script Hub para o jogo **Blade Slayer** no Roblox.
 Cole isso no seu executor Roblox:
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/SEU_USUARIO/Szy-Hub/main/.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/szy7x/Blade-Slayer-Script/main/main.lua"))()
