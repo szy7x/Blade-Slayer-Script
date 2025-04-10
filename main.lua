@@ -88,3 +88,5 @@ Tab:AddToggle("Auto Upgrade", {Default = false}, function(state)
     autoUpgrade = state
     if state then startAutoUpgrade() end
 end)
+
+Window:SelectTab(1)
