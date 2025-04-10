@@ -1,17 +1,17 @@
 repeat task.wait() until game:IsLoaded()
 
--- Carrega Rayfield UI
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+-- Carrega Rayfield corretamente
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Blade Slayer Hub",
-    LoadingTitle = "Blade Slayer Script",
-    LoadingSubtitle = "By Szy",
+    LoadingTitle = "Carregando Script",
+    LoadingSubtitle = "by Szy",
     ConfigurationSaving = {
-        Enabled = false
+        Enabled = false,
     },
     Discord = {
-        Enabled = false
+        Enabled = false,
     },
     KeySystem = false,
 })
@@ -25,15 +25,18 @@ local autoEquip = false
 local autoUpgrade = false
 
 -- Funções
-function startAutoFarm()
+local function startAutoFarm()
     task.spawn(function()
         while autoFarm do
             local mobs = workspace:FindFirstChild("Mobs")
             if mobs then
-                for _, mob in pairs(mobs:GetChildren()) do
+                for _, mob in ipairs(mobs:GetChildren()) do
                     if mob:FindFirstChild("HumanoidRootPart") then
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                        game:GetService("ReplicatedStorage").Remotes.Damage:FireServer(mob)
+                        local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                        if hrp then
+                            hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+                            game:GetService("ReplicatedStorage").Remotes.Damage:FireServer(mob)
+                        end
                     end
                 end
             end
@@ -42,7 +45,7 @@ function startAutoFarm()
     end)
 end
 
-function startAutoRebirth()
+local function startAutoRebirth()
     task.spawn(function()
         while autoRebirth do
             game:GetService("ReplicatedStorage").Remotes.Rebirth:FireServer()
@@ -51,7 +54,7 @@ function startAutoRebirth()
     end)
 end
 
-function startAutoEquip()
+local function startAutoEquip()
     task.spawn(function()
         while autoEquip do
             game:GetService("ReplicatedStorage").Remotes.EquipBest:FireServer()
@@ -60,7 +63,7 @@ function startAutoEquip()
     end)
 end
 
-function startAutoUpgrade()
+local function startAutoUpgrade()
     task.spawn(function()
         while autoUpgrade do
             game:GetService("ReplicatedStorage").Remotes.Upgrade:FireServer("Strength")
@@ -69,7 +72,7 @@ function startAutoUpgrade()
     end)
 end
 
--- Toggles
+-- Botões
 MainTab:CreateToggle({
     Name = "Auto Farm",
     CurrentValue = false,
