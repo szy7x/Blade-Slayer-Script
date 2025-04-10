@@ -1,125 +1,192 @@
-repeat task.wait() until game:IsLoaded()
+-- Carregando Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
--- Carrega Fluent
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-
-local Window = Fluent:CreateWindow({
-    Title = "Blade Slayer Hub | by Szy",
-    SubTitle = "🇧🇷",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(500, 350),
-    Acrylic = true,
-    Theme = "Darker",
-    MinimizeKey = Enum.KeyCode.RightControl
+-- Notificação de carregamento
+Rayfield:Notify({
+   Title = "Blade Slayer Script",
+   Content = "Script iniciado com sucesso!",
+   Duration = 5,
+   Image = nil,
+   Actions = {
+      Ignore = {
+         Name = "Fechar",
+         Callback = function() end
+      }
+   }
 })
 
-local Tab = Window:AddTab({ Title = "Main", Icon = "rbxassetid://6026568198" })
+-- Criar Janela
+local Window = Rayfield:CreateWindow({
+   Name = "Blade Slayer - Hub",
+   LoadingTitle = "Carregando Script...",
+   LoadingSubtitle = "By szy7x",
+   ConfigurationSaving = {
+      Enabled = false,
+   },
+   KeySystem = false,
+})
 
--- Variáveis de controle
-local autoFarm = false
-local autoRebirth = false
-local autoEquip = false
-local autoUpgrade = false
-local autoKill = false
+-- ABA: Farm
+local FarmTab = Window:CreateTab("Farm", 4483362458)
 
--- Funções
-local function startAutoFarm()
-    task.spawn(function()
-        while autoFarm do
-            local mobs = workspace:FindFirstChild("Mobs")
-            if mobs then
-                for _, mob in ipairs(mobs:GetChildren()) do
-                    if mob:FindFirstChild("HumanoidRootPart") then
-                        local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                        if hrp then
-                            hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                            game:GetService("ReplicatedStorage").Remotes.Damage:FireServer(mob)
+Rayfield:LoadConfiguration()
+
+-- Toggle Auto Farm
+local AutoFarmToggle = FarmTab:CreateToggle({
+   Name = "Auto Farm",
+   CurrentValue = false,
+   Flag = "AutoFarm",
+   Callback = function(Value)
+      _G.AutoFarm = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.5) -- Espera entre os loops
+      if _G.AutoFarm then
+         pcall(function()
+            -- Loop para percorrer todos os inimigos
+            for _, mob in ipairs(game:GetService("Workspace").Enemies:GetChildren()) do
+               -- Verifica se o mob possui a parte "HumanoidRootPart"
+               if mob:FindFirstChild("HumanoidRootPart") then
+                  -- Teleporte para o inimigo
+                  local humanoidRootPart = mob:FindFirstChild("HumanoidRootPart")
+                  if humanoidRootPart then
+                     -- Atualiza a posição do jogador para o CFrame do inimigo
+                     local playerHRP = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                     if playerHRP then
+                        -- Teleporta o jogador para a posição do inimigo
+                        playerHRP.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 3, 0) -- Ajuste de altura (3 studs acima do inimigo)
+                        wait(0.5)  -- Aguarda para garantir o teleporte
+
+                        -- Verifica se o inimigo ainda está vivo
+                        local humanoid = mob:FindFirstChild("Humanoid")
+                        if humanoid and humanoid.Health > 0 then
+                           -- Aplica o dano ao inimigo
+                           game:GetService("ReplicatedStorage").Remotes.DamageMonster:FireServer(mob)
                         end
-                    end
-                end
+                     end
+                  end
+               end
             end
-            task.wait(0.3)
-        end
-    end)
-end
+         end)
+      end
+   end
+end)
 
-local function startAutoRebirth()
-    task.spawn(function()
-        while autoRebirth do
-            game:GetService("ReplicatedStorage").Remotes.Rebirth:FireServer()
-            task.wait(5)
-        end
-    end)
-end
+-- ABA: Player
+local PlayerTab = Window:CreateTab("Player", 4483362458)
 
-local function startAutoEquip()
-    task.spawn(function()
-        while autoEquip do
-            game:GetService("ReplicatedStorage").Remotes.EquipBest:FireServer()
-            task.wait(2)
-        end
-    end)
-end
+-- Toggle Auto Rebirth
+PlayerTab:CreateToggle({
+   Name = "Auto Rebirth",
+   CurrentValue = false,
+   Flag = "AutoRebirth",
+   Callback = function(Value)
+      _G.AutoRebirth = Value
+   end,
+})
 
-local function startAutoUpgrade()
-    task.spawn(function()
-        while autoUpgrade do
-            game:GetService("ReplicatedStorage").Remotes.Upgrade:FireServer("Strength")
-            task.wait(2)
-        end
-    end)
-end
+task.spawn(function()
+   while true do
+      task.wait(2)
+      if _G.AutoRebirth then
+         pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.PlayerReborn:FireServer()
+         end)
+      end
+   end
+end)
 
-local function startAutoKill()
-    task.spawn(function()
-        while autoKill do
-            local nearest
-            local shortestDistance = math.huge
-            for _, mob in pairs(workspace:FindFirstChild("Mobs"):GetChildren()) do
-                if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                    local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - mob.HumanoidRootPart.Position).Magnitude
-                    if distance < shortestDistance then
-                        shortestDistance = distance
-                        nearest = mob
-                    end
-                end
+-- Toggle Auto Equip Best Weapon
+PlayerTab:CreateToggle({
+   Name = "Auto Equip Best Weapon",
+   CurrentValue = false,
+   Flag = "AutoEquip",
+   Callback = function(Value)
+      _G.AutoEquip = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(2)
+      if _G.AutoEquip then
+         pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.EquipBestWeapon:FireServer()
+         end)
+      end
+   end
+end)
+
+-- ABA: Heroes
+local HeroesTab = Window:CreateTab("Heroes", 4483362458)
+
+-- Toggle Auto Equip Best Hero
+HeroesTab:CreateToggle({
+   Name = "Auto Equip Best Hero",
+   CurrentValue = false,
+   Flag = "AutoEquipBestHero",
+   Callback = function(Value)
+      _G.AutoEquipBestHero = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(2)
+      if _G.AutoEquipBestHero then
+         pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.AutoEquipBestHero:FireServer()
+         end)
+      end
+   end
+end)
+
+-- Toggle Auto Hatch Nearest
+HeroesTab:CreateToggle({
+   Name = "Auto Hatch Nearest",
+   CurrentValue = false,
+   Flag = "AutoHatchNearest",
+   Callback = function(Value)
+      _G.AutoHatchNearest = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait()
+      if _G.AutoHatchNearest then
+         pcall(function()
+            local mapsFolder = game.Workspace:FindFirstChild("Maps")
+            if mapsFolder then
+               local currentMap = mapsFolder:GetChildren()[1]
+               if currentMap and currentMap:FindFirstChild("Map") and currentMap.Map:FindFirstChild("Eggs") then
+                  local egg = currentMap.Map.Eggs:GetChildren()[1]
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = egg.CFrame
+                  wait(0.5)
+                  local vim = game:GetService("VirtualInputManager")
+                  vim:SendKeyEvent(true, "E", false, game)
+                  wait(0.2)
+                  vim:SendKeyEvent(false, "E", false, game)
+               end
             end
-
-            if nearest then
-                local hrp = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    hrp.CFrame = nearest.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                    game:GetService("ReplicatedStorage").Remotes.Damage:FireServer(nearest)
-                end
-            end
-
-            task.wait(0.25)
-        end
-    end)
-end
-
--- Botões
-Tab:AddToggle("Auto Farm", {Default = false}, function(state)
-    autoFarm = state
-    if state then startAutoFarm() end
+         end)
+      end
+   end
 end)
 
-Tab:AddToggle("Auto Rebirth", {Default = false}, function(state)
-    autoRebirth = state
-    if state then startAutoRebirth() end
-end)
-
-Tab:AddToggle("Auto Equip", {Default = false}, function(state)
-    autoEquip = state
-    if state then startAutoEquip() end
-end)
-
-Tab:AddToggle("Auto Upgrade", {Default = false}, function(state)
-    autoUpgrade = state
-    if state then startAutoUpgrade() end
-end)
-
-Tab:AddToggle("Auto Kill", {Default = false}, function(state)
-    autoKill = state
-    if state then startAutoKill() end
-end)
+-- Finalização
+Rayfield:Notify({
+   Title = "Blade Slayer Script",
+   Content = "Tudo pronto!",
+   Duration = 4,
+   Image = nil,
+   Actions = {
+      Ignore = {
+         Name = "OK",
+         Callback = function() end
+      }
+   }
+})
