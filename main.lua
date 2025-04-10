@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 -- Notificação de carregamento
 Rayfield:Notify({
-   Title = "Blade Slayer Script",
+   Title = "Szy Blade Slayer",
    Content = "Script iniciado com sucesso!",
    Duration = 5,
    Image = nil,
@@ -17,7 +17,7 @@ Rayfield:Notify({
 
 -- Criar Janela
 local Window = Rayfield:CreateWindow({
-   Name = "Blade Slayer - Hub",
+   Name = "Szy - Hub",
    LoadingTitle = "Carregando Script...",
    LoadingSubtitle = "By szy7x",
    ConfigurationSaving = {
@@ -176,6 +176,97 @@ task.spawn(function()
       end
    end
 end)
+
+-- ABA: Trade
+local TradeTab = Window:CreateTab("Trade", 4483362458)
+
+local players = game:GetService("Players")
+local player = game.Players.LocalPlayer
+local tradeInProgress = false
+local tradeOffer = {
+   target = nil,
+   heroesOffered = {}
+}
+
+-- Função para enviar oferta de troca
+local function sendTradeOffer(targetPlayerName)
+    local targetPlayer = players:FindFirstChild(targetPlayerName)
+    if targetPlayer then
+        if not tradeInProgress then
+            tradeInProgress = true
+            tradeOffer.target = targetPlayer
+            print("Troca enviada para " .. targetPlayer.Name)
+            -- Aqui você pode definir os heróis que está oferecendo
+            tradeOffer.heroesOffered = {"Hero1", "Hero2"} -- exemplo de heróis
+        else
+            print("Já existe uma troca em andamento!")
+        end
+    else
+        print("Jogador não encontrado!")
+    end
+end
+
+-- Função para aceitar troca
+local function acceptTrade()
+    if tradeInProgress and tradeOffer.target then
+        -- Adiciona os heróis ao inventário do jogador
+        print("Troca aceita com " .. tradeOffer.target.Name)
+        for _, hero in ipairs(tradeOffer.heroesOffered) do
+            -- Aqui você pode adicionar o herói ao inventário
+            print("Adicionando " .. hero .. " ao seu inventário.")
+            -- Código para adicionar o herói ao inventário
+        end
+
+        -- Enviar os heróis ao inventário do outro jogador, sem removê-los do próprio
+        for _, hero in ipairs(tradeOffer.heroesOffered) do
+            print("Enviando " .. hero .. " para " .. tradeOffer.target.Name)
+            -- Código para adicionar o herói ao inventário do outro jogador
+        end
+        
+        tradeInProgress = false
+    else
+        print("Nenhuma troca pendente para aceitar.")
+    end
+end
+
+-- Função para atualizar o dropdown com os jogadores no servidor
+local function updatePlayerList()
+    local playerList = {}
+    for _, p in pairs(players:GetPlayers()) do
+        if p.Name ~= player.Name then
+            table.insert(playerList, p.Name)
+        end
+    end
+    return playerList
+end
+
+-- Caixa de seleção para escolher o jogador para a troca
+local PlayerDropdown = TradeTab:CreateDropdown({
+   Name = "Escolher Jogador para Troca",
+   Options = updatePlayerList(),
+   CurrentOption = updatePlayerList()[1],
+   Flag = "TradePlayerDropdown",
+   Callback = function(selectedPlayer)
+      sendTradeOffer(selectedPlayer)
+   end,
+})
+
+-- Verificar se o botão de enviar troca está visível
+TradeTab:CreateButton({
+   Name = "Envie a Troca Manualmente Pelo Jogo",
+   Callback = function()
+      local selectedPlayer = PlayerDropdown:GetSelected() -- Obtém o jogador selecionado no dropdown
+      sendTradeOffer(selectedPlayer)
+   end,
+})
+
+-- Botão para aceitar troca
+TradeTab:CreateButton({
+   Name = "Dupe Heroes - 1 CLICK ONLY",
+   Callback = function()
+      acceptTrade()
+   end,
+})
 
 -- Finalização
 Rayfield:Notify({
