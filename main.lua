@@ -1,78 +1,71 @@
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Blade Slayer | Wing Hub",
-   LoadingTitle = "Blade Slayer Script",
-   LoadingSubtitle = "By Szy",
+   Name = "Blade Slayer | Szy Hub",
+   LoadingTitle = "Iniciando...",
+   LoadingSubtitle = "By Szy 🇧🇷",
    ConfigurationSaving = {
-      Enabled = false
-   },
-   Discord = {
       Enabled = false
    },
    KeySystem = false
 })
 
 Rayfield:Notify({
-   Title = "Szy Hub",
-   Content = "Script carregado com sucesso!",
-   Duration = 6.5,
-   Image = 4483362458,
+   Title = "Blade Slayer Script",
+   Content = "Carregado com sucesso!",
+   Duration = 5
 })
 
--- ABA: Farm
-local FarmTab = Window:CreateTab("Farm", 4483362458)
-
-FarmTab:CreateToggle({
+-- Aba Farm
+local Farm = Window:CreateTab("Farm")
+Farm:CreateToggle({
    Name = "Auto Kill",
    CurrentValue = false,
-   Flag = "AutoKill",
    Callback = function(Value)
-      getgenv().autoKill = Value
-      while getgenv().autoKill do
-         print("Matando inimigos...")
+      getgenv().AutoKill = Value
+      while getgenv().AutoKill do
+         print("Executando Auto Kill...")
          task.wait(0.5)
       end
    end
 })
 
-FarmTab:CreateToggle({
+Farm:CreateToggle({
    Name = "Auto Upgrade",
    CurrentValue = false,
-   Flag = "AutoUpgrade",
    Callback = function(Value)
-      getgenv().autoUpgrade = Value
-      while getgenv().autoUpgrade do
-         print("Fazendo upgrade...")
+      getgenv().AutoUpgrade = Value
+      while getgenv().AutoUpgrade do
+         print("Executando Auto Upgrade...")
          task.wait(1)
       end
    end
 })
 
--- ABA: Player
-local PlayerTab = Window:CreateTab("Player", 4483362458)
-
-PlayerTab:CreateButton({
+-- Aba Player
+local Player = Window:CreateTab("Player")
+Player:CreateButton({
    Name = "Velocidade x2",
    Callback = function()
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
+      local plr = game.Players.LocalPlayer
+      if plr and plr.Character then
+         plr.Character.Humanoid.WalkSpeed = 32
+      end
    end
 })
 
--- ABA: Teleport
-local TeleportTab = Window:CreateTab("Teleport", 4483362458)
-
-TeleportTab:CreateButton({
-   Name = "Ir para Zona 1",
+-- Aba Teleport
+local Teleport = Window:CreateTab("Teleport")
+Teleport:CreateButton({
+   Name = "Zona 1",
    Callback = function()
       game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 5, 0)
    end
 })
 
--- ABA: Misc
-local MiscTab = Window:CreateTab("Misc", 4483362458)
-
-MiscTab:CreateButton({
+-- Aba Misc
+local Misc = Window:CreateTab("Misc")
+Misc:CreateButton({
    Name = "Fechar GUI",
    Callback = function()
       Rayfield:Destroy()
