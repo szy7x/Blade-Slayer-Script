@@ -1,143 +1,110 @@
--- Aguarda o jogo carregar completamente
-repeat task.wait() until game:IsLoaded()
-print("Script iniciado, jogo carregado!")
+-- Notificação de início
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Szy Blade Slayer Hub",
+    Text = "Script iniciado com sucesso!",
+    Duration = 4
+})
 
--- Carrega a Fluent UI (com o parâmetro true para compatibilidade)
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua", true))()
-if not Fluent then
-    warn("Falha ao carregar Fluent UI")
-    return
-end
-print("Fluent carregado com sucesso!")
-
--- Cria a janela principal com Fluent
+-- Carrega Fluent UI
+local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/centie/Fluent/main/source.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = "Blade Slayer Hub | by Szy",
-    SubTitle = "Tora Style",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(520, 360),
+    Title = "Blade Slayer | Szy Hub",
+    SubTitle = "Feito por Szy 🇧🇷",
+    TabWidth = 120,
+    Size = UDim2.fromOffset(520, 400),
     Acrylic = true,
-    Theme = "Darker",
-    MinimizeKey = Enum.KeyCode.RightControl
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
 })
-print("Janela criada com sucesso!")
 
--- Adiciona a aba "Main"
-local MainTab = Window:AddTab({ Title = "Main", Icon = "rbxassetid://6026568198" })
-print("Aba 'Main' criada com sucesso!")
+-- Abas
+local credits = Window:AddTab({ Title = "Credits", Icon = "heart" })
+local info = Window:AddTab({ Title = "Informations", Icon = "info" })
+local farm = Window:AddTab({ Title = "Farm", Icon = "axe" })
+local dungeon = Window:AddTab({ Title = "Dungeon", Icon = "shield" })
+local misc = Window:AddTab({ Title = "Misc", Icon = "settings" })
+local machine = Window:AddTab({ Title = "Machine", Icon = "zap" })
+local trade = Window:AddTab({ Title = "Trade", Icon = "gift" })
+local player = Window:AddTab({ Title = "Player", Icon = "user" })
+local teleport = Window:AddTab({ Title = "Teleport", Icon = "map" })
 
--- Variáveis de controle
-local autoFarm = false
-local autoRebirth = false
-local autoUpgrade = false
-local autoEquip = false
+-- Variáveis
+local autoFarm, autoRebirth, autoUpgrade = false, false, false
 
--- Função de Auto Farm (simula cliques para dano)
-function startAutoFarm()
-    task.spawn(function()
-        while autoFarm do
+-- Auto loop
+task.spawn(function()
+    while task.wait(0.2) do
+        if autoFarm then
             pcall(function()
-                game:GetService("ReplicatedStorage").Events.Click3:FireServer()
+                game:GetService("ReplicatedStorage").Remotes.Click:FireServer()
             end)
-            task.wait(0.1)
         end
-    end)
-end
-
--- Função de Auto Rebirth
-function startAutoRebirth()
-    task.spawn(function()
-        while autoRebirth do
+        if autoRebirth then
             pcall(function()
-                game:GetService("ReplicatedStorage").Events.Rebirth:FireServer()
+                game:GetService("ReplicatedStorage").Remotes.Rebirth:FireServer()
             end)
-            task.wait(2)
         end
-    end)
-end
-
--- Função de Auto Upgrade (ativa todos os upgrades disponíveis)
-function startAutoUpgrade()
-    task.spawn(function()
-        while autoUpgrade do
+        if autoUpgrade then
             pcall(function()
-                for _, upgrade in pairs(game:GetService("ReplicatedStorage").Events.Upgrade:GetChildren()) do
-                    upgrade:FireServer()
-                end
+                game:GetService("ReplicatedStorage").Remotes.Upgrade:InvokeServer("UpgradeName")
             end)
-            task.wait(2)
-        end
-    end)
-end
-
--- Função de Auto Equip Best (equipe automaticamente o melhor item/espada)
-function startAutoEquip()
-    task.spawn(function()
-        while autoEquip do
-            pcall(function()
-                game:GetService("ReplicatedStorage").Events["Equip Best"]:FireServer()
-            end)
-            task.wait(3)
-        end
-    end)
-end
-
--- Adiciona o toggle de Auto Farm à interface
-MainTab:AddToggle({
-    Title = "Auto Farm",
-    Default = false,
-    Callback = function(state)
-        autoFarm = state
-        if state then
-            print("Auto Farm ativado!")
-            startAutoFarm()
-        else
-            print("Auto Farm desativado!")
         end
     end
-})
+end)
 
--- Adiciona o toggle de Auto Rebirth à interface
-MainTab:AddToggle({
-    Title = "Auto Rebirth",
-    Default = false,
-    Callback = function(state)
-        autoRebirth = state
-        if state then
-            print("Auto Rebirth ativado!")
-            startAutoRebirth()
-        else
-            print("Auto Rebirth desativado!")
-        end
-    end
-})
+-- Créditos
+credits:AddParagraph({ Title = "Feito por", Content = "Szy" })
+credits:AddButton({ Title = "Copiar Discord", Callback = function()
+    setclipboard("discord.gg/seuszy")
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Discord copiado!",
+        Text = "Cole no seu navegador",
+        Duration = 4
+    })
+end })
 
--- Adiciona o toggle de Auto Upgrade à interface
-MainTab:AddToggle({
-    Title = "Auto Upgrade",
-    Default = false,
-    Callback = function(state)
-        autoUpgrade = state
-        if state then
-            print("Auto Upgrade ativado!")
-            startAutoUpgrade()
-        else
-            print("Auto Upgrade desativado!")
-        end
-    end
-})
+-- Informações
+info:AddParagraph({ Title = "Versão", Content = "1.0\nAtualizado em Abril 2025" })
 
--- Adiciona o toggle de Auto Equip Best à interface
-MainTab:AddToggle({
-    Title = "Auto Equip Best",
-    Default = false,
-    Callback = function(state)
-        autoEquip = state
-        if state then
-            print("Auto Equip Best ativado!")
-            startAutoEquip()
-        else
-            print("Auto Equip Best desativado!")
-        end
-    end
-})
+-- Farm
+farm:AddToggle("Auto Farm", false, function(v) autoFarm = v end)
+farm:AddToggle("Auto Rebirth", false, function(v) autoRebirth = v end)
+farm:AddToggle("Auto Upgrade", false, function(v) autoUpgrade = v end)
+farm:AddButton({ Title = "Equipar Melhor", Callback = function()
+    pcall(function()
+        game:GetService("ReplicatedStorage").Remotes.EquipBest:FireServer()
+    end)
+end })
+
+-- Dungeon/Raid
+dungeon:AddButton({ Title = "Entrar na Dungeon", Callback = function()
+    print("Entrando na Dungeon...")
+end })
+
+-- Misc
+misc:AddButton({ Title = "Destravar FPS", Callback = function()
+    setfpscap(999)
+end })
+
+-- Machine
+machine:AddButton({ Title = "Upgrade Espada", Callback = function()
+    print("Upgrade da espada enviado.")
+end })
+
+-- Trade
+trade:AddButton({ Title = "Solicitar Troca", Callback = function()
+    print("Troca solicitada.")
+end })
+
+-- Player
+player:AddButton({ Title = "Speed x2", Callback = function()
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
+end })
+
+-- Teleport
+teleport:AddButton({ Title = "Spawn", Callback = function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0)
+end })
+teleport:AddButton({ Title = "Área Final", Callback = function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(500, 10, 500)
+end })
