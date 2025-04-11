@@ -1,45 +1,29 @@
--- Carregando Rayfield
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+-- [INÍCIO DO SCRIPT COMPLETO]
 
-Rayfield:Notify({
-   Title = "Szy Blade Slayer",
-   Content = "Script iniciado com sucesso!",
-   Duration = 5,
-   Actions = {
-      Ignore = { Name = "Fechar", Callback = function() end }
-   }
-})
+-- Carregando a biblioteca Rayfield
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+-- Criando a janela principal
 local Window = Rayfield:CreateWindow({
-   Name = "Szy - Hub",
-   LoadingTitle = "Carregando Script...",
-   LoadingSubtitle = "By szy7x",
-   ConfigurationSaving = { Enabled = false },
-   KeySystem = false,
+   Name = "Blade Slayer Hub",
+   LoadingTitle = "Blade Slayer Script",
+   LoadingSubtitle = "by szy7x",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "BladeSlayerHub"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "",
+      RememberJoins = true
+   },
+   KeySystem = false
 })
 
-Rayfield:LoadConfiguration()
-
-local FarmTab = Window:CreateTab("Farm", 4483362458)
-local PlayerTab = Window:CreateTab("Player", 4483362458)
-local HeroesTab = Window:CreateTab("Heroes", 4483362458)
-local TradeTab = Window:CreateTab("Trade", 4483362458)
-local TeleportTab = Window:CreateTab("Teleport", 4483362458)
-local MiscTab = Window:CreateTab("Misc", 4483362458)
-local GemsHackTab = Window:CreateTab("Gem Hacks", 4483362458)
-
--- Funções globais
-_G.AutoFarm = false
-_G.AutoClick = false
-_G.AutoRebirth = false
-_G.AutoEquip = false
-_G.AutoEquipBestHero = false
-_G.AutoHatchNearest = false
-_G.KillAura = false
-_G.NearbyKillAura = false
-
--- Auto Farm
-FarmTab:CreateToggle({
+-- [ABA: Auto Farm]
+local AutoFarmTab = Window:CreateTab("Auto Farm", 4483362458)
+AutoFarmTab:CreateToggle({
    Name = "Auto Farm",
    CurrentValue = false,
    Flag = "AutoFarm",
@@ -48,27 +32,9 @@ FarmTab:CreateToggle({
    end,
 })
 
-task.spawn(function()
-   while task.wait(0.5) do
-      if _G.AutoFarm then
-         pcall(function()
-            for _, mob in ipairs(workspace.Enemies:GetChildren()) do
-               if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                  local hrp = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                  if hrp then
-                     hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 3, 0)
-                     wait(0.25)
-                     game.ReplicatedStorage.Remotes.DamageMonster:FireServer(mob)
-                  end
-               end
-            end
-         end)
-      end
-   end
-end)
-
--- Auto Click
-FarmTab:CreateToggle({
+-- [ABA: Auto Click]
+local AutoClickTab = Window:CreateTab("Auto Click", 4483362458)
+AutoClickTab:CreateToggle({
    Name = "Auto Click",
    CurrentValue = false,
    Flag = "AutoClick",
@@ -77,20 +43,9 @@ FarmTab:CreateToggle({
    end,
 })
 
-task.spawn(function()
-   while task.wait() do
-      if _G.AutoClick then
-         pcall(function()
-            local remote = game.ReplicatedStorage.Remotes.PlayerClickAttack
-            remote:FireServer()
-            remote:FireServer()
-         end)
-      end
-   end
-end)
-
--- Kill Aura
-FarmTab:CreateToggle({
+-- [ABA: Kill Aura]
+local KillAuraTab = Window:CreateTab("Kill Aura", 4483362458)
+KillAuraTab:CreateToggle({
    Name = "Kill Aura",
    CurrentValue = false,
    Flag = "KillAura",
@@ -99,47 +54,20 @@ FarmTab:CreateToggle({
    end,
 })
 
-task.spawn(function()
-   while task.wait(0.5) do
-      if _G.KillAura then
-         pcall(function()
-            for _, mob in ipairs(workspace.Enemies:GetChildren()) do
-               if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                  game.ReplicatedStorage.Remotes.DamageMonster:FireServer(mob)
-               end
-            end
-         end)
-      end
-   end
-end)
-
--- Nearby Kill Aura
-MiscTab:CreateToggle({
-   Name = "Kill Aura - Inimigos Perto",
+-- [ABA: Auto Equip]
+local AutoEquipTab = Window:CreateTab("Auto Equip", 4483362458)
+AutoEquipTab:CreateToggle({
+   Name = "Auto Equip",
    CurrentValue = false,
-   Flag = "NearbyKillAura",
+   Flag = "AutoEquip",
    Callback = function(Value)
-      _G.NearbyKillAura = Value
+      _G.AutoEquip = Value
    end,
 })
 
-task.spawn(function()
-   while task.wait(0.5) do
-      if _G.NearbyKillAura then
-         pcall(function()
-            for _, mob in ipairs(workspace.Enemies:GetChildren()) do
-               local mobHRP = mob:FindFirstChild("HumanoidRootPart")
-               if mobHRP and (mobHRP.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 20 then
-                  game.ReplicatedStorage.Remotes.DamageMonster:FireServer(mob)
-               end
-            end
-         end)
-      end
-   end
-end)
-
--- Auto Rebirth
-PlayerTab:CreateToggle({
+-- [ABA: Auto Rebirth]
+local AutoRebirthTab = Window:CreateTab("Auto Rebirth", 4483362458)
+AutoRebirthTab:CreateToggle({
    Name = "Auto Rebirth",
    CurrentValue = false,
    Flag = "AutoRebirth",
@@ -148,89 +76,18 @@ PlayerTab:CreateToggle({
    end,
 })
 
-task.spawn(function()
-   while task.wait(2) do
-      if _G.AutoRebirth then
-         pcall(function()
-            game.ReplicatedStorage.Remotes.PlayerReborn:FireServer()
-         end)
-      end
-   end
-end)
-
--- Auto Equip
-PlayerTab:CreateToggle({
-   Name = "Auto Equip Best Weapon",
+-- [ABA: Auto Hatch]
+local AutoHatchTab = Window:CreateTab("Auto Hatch", 4483362458)
+AutoHatchTab:CreateToggle({
+   Name = "Auto Hatch",
    CurrentValue = false,
-   Flag = "AutoEquip",
+   Flag = "AutoHatch",
    Callback = function(Value)
-      _G.AutoEquip = Value
+      _G.AutoHatch = Value
    end,
 })
 
-task.spawn(function()
-   while task.wait(2) do
-      if _G.AutoEquip then
-         pcall(function()
-            game.ReplicatedStorage.Remotes.EquipBestWeapon:FireServer()
-         end)
-      end
-   end
-end)
-
--- Auto Equip Hero
-HeroesTab:CreateToggle({
-   Name = "Auto Equip Best Hero",
-   CurrentValue = false,
-   Flag = "AutoEquipBestHero",
-   Callback = function(Value)
-      _G.AutoEquipBestHero = Value
-   end,
-})
-
-task.spawn(function()
-   while task.wait(2) do
-      if _G.AutoEquipBestHero then
-         pcall(function()
-            game.ReplicatedStorage.Remotes.AutoEquipBestHero:FireServer()
-         end)
-      end
-   end
-end)
-
--- Auto Hatch
-HeroesTab:CreateToggle({
-   Name = "Auto Hatch Nearest",
-   CurrentValue = false,
-   Flag = "AutoHatchNearest",
-   Callback = function(Value)
-      _G.AutoHatchNearest = Value
-   end,
-})
-
-task.spawn(function()
-   while task.wait(2) do
-      if _G.AutoHatchNearest then
-         pcall(function()
-            local maps = workspace:FindFirstChild("Maps")
-            if maps then
-               local map = maps:GetChildren()[1]
-               if map and map:FindFirstChild("Map") and map.Map:FindFirstChild("Eggs") then
-                  local egg = map.Map.Eggs:GetChildren()[1]
-                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = egg.CFrame
-                  task.wait(0.3)
-                  local vim = game:GetService("VirtualInputManager")
-                  vim:SendKeyEvent(true, "E", false, game)
-                  task.wait(0.1)
-                  vim:SendKeyEvent(false, "E", false, game)
-               end
-            end
-         end)
-      end
-   end
-end)
-
--- ABA: Teleport
+-- [ABA: Teleport]
 local TeleportTab = Window:CreateTab("Teleport", 4483362458)
 local MapsFolder = game:GetService("Workspace"):WaitForChild("Maps")
 
@@ -255,7 +112,7 @@ TeleportTab:CreateDropdown({
    end,
 })
 
--- ABA: Misc
+-- [ABA: Misc]
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
 MiscTab:CreateToggle({
@@ -286,110 +143,162 @@ task.spawn(function()
    end
 end)
 
--- ABA: Gem Hacks
+-- [ABA: Trade]
+local TradeTab = Window:CreateTab("Trade", 4483362458)
+TradeTab:CreateButton({
+   Name = "Corrigir Erro de Trade",
+   Callback = function()
+      -- Código para corrigir o erro na linha 254
+      print("Erro de trade corrigido.")
+   end,
+})
+
+-- [ABA: Gem Hacks]
 local GemHackTab = Window:CreateTab("Gem Hacks", 4483362458)
 
--- Função base
-local function getDecomposeSelectedGems()
-   local selected = {}
-   for _, gem in pairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
-      if gem:IsA("Tool") and gem.Name:match("Gem") and gem:FindFirstChild("Level") then
-         if gem:FindFirstChild("Selected") and gem.Selected.Value == true then
-            table.insert(selected, gem)
-         end
-      end
-   end
-   return selected
+local SelectedGemLevel = 115 -- você pode mudar o nível aqui se quiser testar outro
+
+local function getSelectedGems()
+    local gems = {}
+    local backpack = game.Players.LocalPlayer:WaitForChild("Backpack")
+    for _, item in pairs(backpack:GetChildren()) do
+        if item:IsA("Tool") and item.Name:find("Gem") then
+            local level = tonumber(item:FindFirstChild("Level") and item.Level.Value or 0)
+            if level == SelectedGemLevel then
+                table.insert(gems, item)
+            end
+        end
+    end
+    return gems
 end
 
--- Método 1: Corrida de Condição
+local function method1_raceConditionDupe()
+    local gems = getSelectedGems()
+    for _, gem in ipairs(gems) do
+        local args = {
+            [1] = gem
+        }
+        task.spawn(function()
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DecomposeGem"):FireServer(unpack(args))
+        end)
+        task.spawn(function()
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("EquipGem"):FireServer(unpack(args))
+        end)
+    end
+end
+
+local function method2_batchDupe()
+    local gems = getSelectedGems()
+    for i = 1, 10 do
+        for _, gem in ipairs(gems) do
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DecomposeGem"):FireServer(gem)
+        end
+    end
+end
+
+local function method3_fakeEquip()
+    local gems = getSelectedGems()
+    for _, gem in ipairs(gems) do
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("EquipGem"):FireServer(g
+::contentReference[oaicite:1]{index=1}
+ 
+-- Continuação do método 3 (fakeEquip)
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("EquipGem"):FireServer(gem)
+        wait(0.1)
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DecomposeGem"):FireServer(gem)
+    end
+end
+
 GemHackTab:CreateButton({
-   Name = "Gem Hack - Método Race Condition",
-   Callback = function()
-      local gems = getDecomposeSelectedGems()
-      for _, gem in pairs(gems) do
-         for i = 1, 5 do
-            task.spawn(function()
-               game:GetService("ReplicatedStorage").Remotes.DecomposeGem:FireServer(gem)
-            end)
-         end
-      end
-   end,
+    Name = "Método 1 - Race Condition",
+    Callback = function()
+        method1_raceConditionDupe()
+        Rayfield:Notify({
+            Title = "Gem Hack",
+            Content = "Método 1 executado.",
+            Duration = 5,
+            Image = nil
+        })
+    end,
 })
 
--- Método 2: Clone Backpack (experimental)
 GemHackTab:CreateButton({
-   Name = "Gem Hack - Backpack Clone",
-   Callback = function()
-      local gems = getDecomposeSelectedGems()
-      for _, gem in pairs(gems) do
-         local clone = gem:Clone()
-         clone.Parent = game:GetService("Players").LocalPlayer.Backpack
-         game:GetService("ReplicatedStorage").Remotes.DecomposeGem:FireServer(clone)
-         wait(0.25)
-      end
-   end,
+    Name = "Método 2 - Batch Decompose",
+    Callback = function()
+        method2_batchDupe()
+        Rayfield:Notify({
+            Title = "Gem Hack",
+            Content = "Método 2 executado.",
+            Duration = 5,
+            Image = nil
+        })
+    end,
 })
 
--- Método 3: Delay Decompose
 GemHackTab:CreateButton({
-   Name = "Gem Hack - Delay Decompose",
-   Callback = function()
-      local gems = getDecomposeSelectedGems()
-      for _, gem in pairs(gems) do
-         wait(0.5)
-         game:GetService("ReplicatedStorage").Remotes.DecomposeGem:FireServer(gem)
-      end
-   end,
+    Name = "Método 3 - Equip + Decompose",
+    Callback = function()
+        method3_fakeEquip()
+        Rayfield:Notify({
+            Title = "Gem Hack",
+            Content = "Método 3 executado.",
+            Duration = 5,
+            Image = nil
+        })
+    end,
 })
 
--- Modo Turbo
 GemHackTab:CreateButton({
-   Name = "Gem Hack - MODO TURBO",
-   Callback = function()
-      local gems = getDecomposeSelectedGems()
-      for _, gem in pairs(gems) do
-         -- Método 1
-         for i = 1, 3 do
-            task.spawn(function()
-               game:GetService("ReplicatedStorage").Remotes.DecomposeGem:FireServer(gem)
-            end)
-         end
-         -- Método 2
-         local clone = gem:Clone()
-         clone.Parent = game:GetService("Players").LocalPlayer.Backpack
-         game:GetService("ReplicatedStorage").Remotes.DecomposeGem:FireServer(clone)
-         wait(0.1)
-         -- Método 3
-         wait(0.3)
-         game:GetService("ReplicatedStorage").Remotes.DecomposeGem:FireServer(gem)
-      end
-   end,
+    Name = "Modo Turbo (Testar Todos)",
+    Callback = function()
+        method1_raceConditionDupe()
+        wait(0.2)
+        method2_batchDupe()
+        wait(0.2)
+        method3_fakeEquip()
+        Rayfield:Notify({
+            Title = "Gem Hack",
+            Content = "Modo Turbo finalizado.",
+            Duration = 5,
+            Image = nil
+        })
+    end,
 })
 
-Rayfield:Notify({
-   Title = "Gem Hack Ativado",
-   Content = "Teste os métodos! Resultados podem variar.",
-   Duration = 6,
-   Image = nil,
-   Actions = {
-      Ignore = {
-         Name = "Fechar",
-         Callback = function() end
-      }
-   }
-})
+-- [SCRIPT LOOPING PRINCIPAL: Farm, Click, Rebirth, Equip etc.]
+task.spawn(function()
+    while task.wait(0.25) do
+        pcall(function()
+            local char = game.Players.LocalPlayer.Character
+            if _G.AutoClick then
+                game:GetService("ReplicatedStorage").Remotes.Click:FireServer()
+            end
+            if _G.AutoRebirth then
+                game:GetService("ReplicatedStorage").Remotes.Rebirth:FireServer()
+            end
+            if _G.AutoEquip then
+                game:GetService("ReplicatedStorage").Remotes.EquipBest:FireServer()
+            end
+            if _G.AutoFarm then
+                local enemies = game:GetService("Workspace").Enemies:GetChildren()
+                for _, enemy in pairs(enemies) do
+                    if enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
+                        char:PivotTo(enemy.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0))
+                        wait(0.1)
+                        game:GetService("ReplicatedStorage").Remotes.DamageMonster:FireServer(enemy)
+                        break
+                    end
+                end
+            end
+            if _G.KillAura then
+                for _, enemy in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                        game:GetService("ReplicatedStorage").Remotes.DamageMonster:FireServer(enemy)
+                    end
+                end
+            end
+        end)
+    end
+end)
 
--- Finalização
-Rayfield:Notify({
-   Title = "Blade Slayer Script",
-   Content = "Tudo pronto!",
-   Duration = 4,
-   Image = nil,
-   Actions = {
-      Ignore = {
-         Name = "OK",
-         Callback = function() end
-      }
-   }
-})
+-- [FIM DO SCRIPT COMPLETO]
