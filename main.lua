@@ -31,6 +31,33 @@ local FarmTab = Window:CreateTab("Farm", 4483362458)
 
 Rayfield:LoadConfiguration()
 
+-- ABA: Farm
+local FarmTab = Window:CreateTab("Farm", 4483362458)
+
+-- Toggle Auto Click
+FarmTab:CreateToggle({
+   Name = "Auto Click",
+   CurrentValue = false,
+   Flag = "AutoClick",
+   Callback = function(Value)
+      _G.AutoClick = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait()
+      if _G.AutoClick then
+         pcall(function()
+            local remote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerClickAttack")
+            for _ = 1, 3 do
+               remote:FireServer()
+            end
+         end)
+      end
+   end
+end)
+
 -- Toggle Auto Farm
 local AutoFarmToggle = FarmTab:CreateToggle({
    Name = "Auto Farm",
