@@ -26,16 +26,12 @@ local Window = Rayfield:CreateWindow({
    KeySystem = false,
 })
 
-Rayfield:LoadConfiguration()
-
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-local player = Players.LocalPlayer
-
 -- ABA: Farm
 local FarmTab = Window:CreateTab("Farm", 4483362458)
 
+Rayfield:LoadConfiguration()
+
+-- Toggle Auto Farm
 local AutoFarmToggle = FarmTab:CreateToggle({
    Name = "Auto Farm",
    CurrentValue = false,
@@ -47,19 +43,21 @@ local AutoFarmToggle = FarmTab:CreateToggle({
 
 task.spawn(function()
    while true do
-      task.wait(0.5)
+      task.wait(0.5) -- Espera entre os loops
       if _G.AutoFarm then
          pcall(function()
-            for _, mob in ipairs(Workspace.Enemies:GetChildren()) do
+            for _, mob in ipairs(game:GetService("Workspace").Enemies:GetChildren()) do
                if mob:FindFirstChild("HumanoidRootPart") then
-                  local humanoidRootPart = mob.HumanoidRootPart
-                  local playerHRP = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                  if playerHRP then
-                     playerHRP.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 3, 0)
-                     wait(0.5)
-                     local humanoid = mob:FindFirstChild("Humanoid")
-                     if humanoid and humanoid.Health > 0 then
-                        ReplicatedStorage.Remotes.DamageMonster:FireServer(mob)
+                  local humanoidRootPart = mob:FindFirstChild("HumanoidRootPart")
+                  if humanoidRootPart then
+                     local playerHRP = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                     if playerHRP then
+                        playerHRP.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 3, 0)
+                        wait(0.5)
+                        local humanoid = mob:FindFirstChild("Humanoid")
+                        if humanoid and humanoid.Health > 0 then
+                           game:GetService("ReplicatedStorage").Remotes.DamageMonster:FireServer(mob)
+                        end
                      end
                   end
                end
@@ -69,9 +67,33 @@ task.spawn(function()
    end
 end)
 
+-- Toggle Auto Click
+FarmTab:CreateToggle({
+   Name = "Auto Click",
+   CurrentValue = false,
+   Flag = "AutoClick",
+   Callback = function(Value)
+      _G.AutoClick = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait()
+      if _G.AutoClick then
+         pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.PlayerClickAttack:FireServer()
+            game:GetService("ReplicatedStorage").Remotes.PlayerClickAttack:FireServer()
+            game:GetService("ReplicatedStorage").Remotes.PlayerClickAttack:FireServer()
+         end)
+      end
+   end
+end)
+
 -- ABA: Player
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
+-- Toggle Auto Rebirth
 PlayerTab:CreateToggle({
    Name = "Auto Rebirth",
    CurrentValue = false,
@@ -86,12 +108,13 @@ task.spawn(function()
       task.wait(2)
       if _G.AutoRebirth then
          pcall(function()
-            ReplicatedStorage.Remotes.PlayerReborn:FireServer()
+            game:GetService("ReplicatedStorage").Remotes.PlayerReborn:FireServer()
          end)
       end
    end
 end)
 
+-- Toggle Auto Equip Best Weapon
 PlayerTab:CreateToggle({
    Name = "Auto Equip Best Weapon",
    CurrentValue = false,
@@ -106,7 +129,7 @@ task.spawn(function()
       task.wait(2)
       if _G.AutoEquip then
          pcall(function()
-            ReplicatedStorage.Remotes.EquipBestWeapon:FireServer()
+            game:GetService("ReplicatedStorage").Remotes.EquipBestWeapon:FireServer()
          end)
       end
    end
@@ -115,6 +138,7 @@ end)
 -- ABA: Heroes
 local HeroesTab = Window:CreateTab("Heroes", 4483362458)
 
+-- Toggle Auto Equip Best Hero
 HeroesTab:CreateToggle({
    Name = "Auto Equip Best Hero",
    CurrentValue = false,
@@ -129,12 +153,13 @@ task.spawn(function()
       task.wait(2)
       if _G.AutoEquipBestHero then
          pcall(function()
-            ReplicatedStorage.Remotes.AutoEquipBestHero:FireServer()
+            game:GetService("ReplicatedStorage").Remotes.AutoEquipBestHero:FireServer()
          end)
       end
    end
 end)
 
+-- Toggle Auto Hatch Nearest
 HeroesTab:CreateToggle({
    Name = "Auto Hatch Nearest",
    CurrentValue = false,
@@ -149,16 +174,17 @@ task.spawn(function()
       task.wait()
       if _G.AutoHatchNearest then
          pcall(function()
-            local mapsFolder = Workspace:FindFirstChild("Maps")
+            local mapsFolder = game.Workspace:FindFirstChild("Maps")
             if mapsFolder then
                local currentMap = mapsFolder:GetChildren()[1]
                if currentMap and currentMap:FindFirstChild("Map") and currentMap.Map:FindFirstChild("Eggs") then
                   local egg = currentMap.Map.Eggs:GetChildren()[1]
-                  player.Character.HumanoidRootPart.CFrame = egg.CFrame
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = egg.CFrame
                   wait(0.5)
-                  game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                  local vim = game:GetService("VirtualInputManager")
+                  vim:SendKeyEvent(true, "E", false, game)
                   wait(0.2)
-                  game:GetService("VirtualInputManager"):SendKeyEvent(false, "E", false, game)
+                  vim:SendKeyEvent(false, "E", false, game)
                end
             end
          end)
@@ -166,105 +192,83 @@ task.spawn(function()
    end
 end)
 
--- ABA: Dungeon
-local DungeonTab = Window:CreateTab("Dungeon", 4483362458)
+-- ABA: Trade
+local TradeTab = Window:CreateTab("Trade", 4483362458)
 
-local raidVars = {
-   s = "Room1",
-   diff = 1,
-   mapid = 50201,
-   table = {"Room1", "Room2", "Room3"},
-   dtable = {"1", "2", "3"},
-   fraid = false,
-   hero = {guid = "null", index = 1, skill = true, id = 101},
+local players = game:GetService("Players")
+local player = game.Players.LocalPlayer
+local tradeInProgress = false
+local tradeOffer = {
+   target = nil,
+   heroesOffered = {}
 }
 
-DungeonTab:CreateDropdown({
-   Name = "Select Room",
-   Options = raidVars.table,
-   CurrentOption = raidVars.s,
-   Callback = function(v) raidVars.s = v end,
+local function sendTradeOffer(targetPlayerName)
+    local targetPlayer = players:FindFirstChild(targetPlayerName)
+    if targetPlayer then
+        if not tradeInProgress then
+            tradeInProgress = true
+            tradeOffer.target = targetPlayer
+            print("Troca enviada para " .. targetPlayer.Name)
+            tradeOffer.heroesOffered = {"Hero1", "Hero2"}
+        else
+            print("Já existe uma troca em andamento!")
+        end
+    else
+        print("Jogador não encontrado!")
+    end
+end
+
+local function acceptTrade()
+    if tradeInProgress and tradeOffer.target then
+        print("Troca aceita com " .. tradeOffer.target.Name)
+        for _, hero in ipairs(tradeOffer.heroesOffered) do
+            print("Adicionando " .. hero .. " ao seu inventário.")
+        end
+        for _, hero in ipairs(tradeOffer.heroesOffered) do
+            print("Enviando " .. hero .. " para " .. tradeOffer.target.Name)
+        end
+        tradeInProgress = false
+    else
+        print("Nenhuma troca pendente para aceitar.")
+    end
+end
+
+local function updatePlayerList()
+    local playerList = {}
+    for _, p in pairs(players:GetPlayers()) do
+        if p.Name ~= player.Name then
+            table.insert(playerList, p.Name)
+        end
+    end
+    return playerList
+end
+
+local PlayerDropdown = TradeTab:CreateDropdown({
+   Name = "Escolher Jogador para Troca",
+   Options = updatePlayerList(),
+   CurrentOption = updatePlayerList()[1],
+   Flag = "TradePlayerDropdown",
+   Callback = function(selectedPlayer)
+      sendTradeOffer(selectedPlayer)
+   end,
 })
 
-DungeonTab:CreateDropdown({
-   Name = "Select difficulty",
-   Options = raidVars.dtable,
-   CurrentOption = tostring(raidVars.diff),
-   Callback = function(v) raidVars.diff = tonumber(v) end,
-})
-
-DungeonTab:CreateInput({
-   Name = "Insert map ID",
-   PlaceholderText = "Ex: 50201",
-   RemoveTextAfterFocusLost = false,
-   Callback = function(v) raidVars.mapid = tonumber(v) end,
-})
-
-DungeonTab:CreateButton({
-   Name = "Raid lobby",
+TradeTab:CreateButton({
+   Name = "Envie a Troca Manualmente Pelo Jogo",
    Callback = function()
-      ReplicatedStorage.Remotes.LocalPlayerTeleport:FireServer({mapId = 50201})
-   end
+      local selectedPlayer = PlayerDropdown:GetSelected()
+      sendTradeOffer(selectedPlayer)
+   end,
 })
 
-DungeonTab:CreateButton({
-   Name = "Start raid",
+TradeTab:CreateButton({
+   Name = "Dupe Heroes - 1 CLICK ONLY",
    Callback = function()
-      Rayfield:Notify({Title = "Raid", Content = "Don't move, auto kill is enabled.", Duration = 5})
-      ReplicatedStorage.Remotes.EnterRaidRoom:FireServer(raidVars.s)
-      wait(0.1)
-      ReplicatedStorage.Remotes.SelectRaidsDifficulty:FireServer({difficulty = raidVars.diff, roomName = raidVars.s, selectMapId = raidVars.mapid})
-      wait(0.1)
-      ReplicatedStorage.Remotes.StartChallengeRaidMap:InvokeServer({userIds = {player.UserId}, roomName = raidVars.s})
-   end
+      acceptTrade()
+   end,
 })
 
-DungeonTab:CreateToggle({
-   Name = "Start raid + Auto kill",
-   CurrentValue = false,
-   Callback = function(v)
-      raidVars.fraid = v
-      if v then
-         Rayfield:Notify({Title = "Raid", Content = "Auto Kill ON - Não se mova!", Duration = 5})
-         ReplicatedStorage.Remotes.EnterRaidRoom:FireServer(raidVars.s)
-         wait(0.1)
-         ReplicatedStorage.Remotes.SelectRaidsDifficulty:FireServer({difficulty = raidVars.diff, roomName = raidVars.s, selectMapId = raidVars.mapid})
-         wait(0.1)
-         ReplicatedStorage.Remotes.StartChallengeRaidMap:InvokeServer({userIds = {player.UserId}, roomName = raidVars.s})
-         wait(0.5)
-         task.spawn(function()
-            while raidVars.fraid do
-               task.wait()
-               if #Workspace.Enemys:GetChildren() < 1 then
-                  if Workspace:FindFirstChild("EnchantChest") then
-                     firetouchinterest(Workspace.EnchantChest.Part, player.Character.HumanoidRootPart, 0)
-                     wait(0.1)
-                     firetouchinterest(Workspace.EnchantChest.Part, player.Character.HumanoidRootPart, 1)
-                     ReplicatedStorage.Remotes.QuitRaidsMap:InvokeServer({currentSlotIndex = 1, toMapId = 50201})
-                     raidVars.fraid = false
-                  else
-                     Rayfield:Notify({Title = "Raid", Content = "Pls join raid. #Failed", Duration = 5})
-                     raidVars.fraid = false
-                  end
-               else
-                  for _, get in ipairs(Workspace.Enemys:GetChildren()) do
-                     local guid = get:GetAttribute("EnemyGuid")
-                     ReplicatedStorage.Remotes.PlayerClickAttack:FireServer(guid)
-                     ReplicatedStorage.Remotes.PlayerRespirationSkillAttack:InvokeServer(guid)
-                     if raidVars.hero.guid ~= "null" then
-                        ReplicatedStorage.Remotes.ClickEnemy:InvokeServer(guid)
-                        ReplicatedStorage.Remotes.HeroSkillHarm:FireServer({harmIndex = raidVars.hero.index, isSkill = raidVars.hero.skill, heroGuid = raidVars.hero.guid, skillId = raidVars.hero.id})
-                        ReplicatedStorage.Remotes.RespirationSkillHarm:FireServer({harmIndex = raidVars.hero.index, skillId = raidVars.hero.id})
-                     end
-                  end
-               end
-            end
-         end)
-      end
-   end
-})
-
--- Finalização
 Rayfield:Notify({
    Title = "Blade Slayer Script",
    Content = "Tudo pronto!",
