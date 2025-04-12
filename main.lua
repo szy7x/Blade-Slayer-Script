@@ -3,40 +3,33 @@
 -- KEY LINK: https://direct-link.net/1335872/szy-hub-key
 -- DISCORD: https://discord.gg/jDhZzpyq2a
 
-if not isfile("szykey.txt") then
-    writefile("szykey.txt", "")
-end
+-- Carrega Rayfield com sistema de Key
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orca/main/source"))()
 
-local HttpService = game:GetService("HttpService")
-local keyLink = "https://direct-link.net/1335872/szy-hub-key"
-local fixedKey = "SzyBladeSlayer2025"
+-- Cria a janela com sistema de chave
+local Window = Rayfield:CreateWindow({
+    Name = "Szy - Blade Slayer",
+    LoadingTitle = "Szy Hub",
+    LoadingSubtitle = "Carregando sua interface...",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "SzyBladeSlayer"
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = "Sistema de Chave - Szy Hub",
+        Subtitle = "Insira sua chave abaixo para continuar",
+        Note = "Clique em 'Get Key' para obter a chave gratuitamente.",
+        FileName = "SzyKeySave",
+        SaveKey = true,
+        GrabKeyFromSite = true,
+        Key = {"SzyBladeSlayer2025"},
+        KeyInput = true,
+        KeyWebsite = "https://direct-link.net/1335872/szy-hub-key"
+    }
+})
 
-local function checkKey()
-    local savedKey = readfile("szykey.txt")
-    if savedKey ~= fixedKey then
-        setclipboard(keyLink)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Szy - Blade Slayer",
-            Text = "Chave inválida. Link da Key copiado!",
-            Duration = 10
-        })
-        local userKey = tostring(string.upper(input("Digite sua Key:")))
-        if userKey == fixedKey then
-            writefile("szykey.txt", fixedKey)
-            return true
-        else
-            return false
-        end
-    end
-    return true
-end
-
-if not checkKey() then
-    return
-end
-
--- Rayfield UI
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Szy - Hub | Blade Slayer",
