@@ -433,6 +433,44 @@ end
 local abaSuporte = Window:CreateTab("Suporte", 4483362458)
 abaSuporte:CreateParagraph({Title = "Discord:", Content = "https://discord.gg/jDhZzpyq2a"})
 
+-- Sistema de Key (Tela de Input + Verificação)
+local Library = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local function promptKey()
+    local keyInput
+    local keyValid = false
+
+    local KeyWindow = Library:CreateWindow({
+        Name = "Szy Hub - Key System",
+        LoadingTitle = "Verificando Key...",
+        LoadingSubtitle = "Aguarde",
+        ConfigurationSaving = {
+            Enabled = false
+        },
+        Discord = {
+            Enabled = true,
+            Invite = "jDhZzpyq2a",
+            RememberJoins = false
+        },
+        KeySystem = true,
+        KeySettings = {
+            Title = "Szy Hub | Blade Slayer",
+            Subtitle = "Sistema de Key",
+            Note = "Obtenha sua key no botão abaixo!",
+            FileName = "SzyBladeKey",
+            SaveKey = true,
+            GrabKeyFromSite = false,
+            Key = "SzyBladeSlayer2025",
+            KeyInput = true,
+            ExternalLink = "https://direct-link.net/1335872/szy-hub-key"
+        }
+    })
+end
+
+-- Chamar função de prompt de Key
+promptKey()
+
+-- Créditos
 local abaCreditos = Window:CreateTab("Créditos", 4483362458)
 abaCreditos:CreateParagraph({
     Title = "Szy Hub",
