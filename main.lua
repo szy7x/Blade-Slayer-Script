@@ -4,7 +4,7 @@
 -- DISCORD: https://discord.gg/jDhZzpyq2a
 
 -- Carrega Rayfield com sistema de Key
-local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orca/main/source"))()
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 -- Cria a janela com sistema de chave
 local Window = Rayfield:CreateWindow({
