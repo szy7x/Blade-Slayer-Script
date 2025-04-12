@@ -433,6 +433,8 @@ end
 local abaSuporte = Window:CreateTab("Suporte", 4483362458)
 abaSuporte:CreateParagraph({Title = "Discord:", Content = "https://discord.gg/jDhZzpyq2a"})
 
+-- (continua com salvamento de configurações, creditos e finalização...)
+
 -- Sistema de Key (Tela de Input + Verificação)
 local Library = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
