@@ -69,7 +69,7 @@ Aqui estão alguns atalhos e comandos rápidos que você pode usar para otimizar
 Se você tiver alguma dúvida ou sugestão, fique à vontade para abrir uma **issue** ou entrar em contato diretamente com o desenvolvedor.
 
 - **GitHub**: [https://github.com/szy7x](https://github.com/szy7x)
-- **Discord**: [[SeuDiscordLinkAqui](https://discord.gg/9bHZwSUSrY))
+- **Discord**: [https://discord.gg/9bHZwSUSrY](https://discord.gg/9bHZwSUSrY))
 - 
 
 ---
